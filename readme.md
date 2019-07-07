@@ -1,16 +1,8 @@
-# Link to Webapp [https://world-bank-dashboard-api.herokuapp.com](https://world-bank-dashboard-api.herokuapp.com)
+# Link to Webapp [https://github-network-app.herokuapp.com/]
 
-# World Bank API Data Dashboard 
+# Github Network App
 
-This is a flask app that visualizes data from the world bank API. Data is
-pulled directly from the API and then visualized using Plotly.
-
-This is a project in development for the Udacity Data Scientist Nanodegree. 
-
-## Getting Started 
-
-This flask app can be used as a template for visualizing your own data. Use
-the template to enhance your professional portfolio. 
+This app 
 
 ## Prerequisites
 

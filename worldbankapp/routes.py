@@ -1,41 +1,42 @@
 from worldbankapp import app
 
-import json, plotly
-from flask import render_template, request, Response, jsonify
-from scripts.data import return_figures
+from Flask import Flask, redirect, request, session
+from os import environ
 
+app.config['SECRET_KEY'] = 'Waffling on is really great for these secrets brandy cactus beartrap'
 
-@app.route('/', methods=['POST', 'GET'])
-@app.route('/index', methods=['POST', 'GET'])
+@app.route('/callback')
+def callback():
+    if 'code' in request.args:
+        url = 'https://github.com/login/oauth/access_token'
+        payload = {
+            'client_id': environ.get('CLIENT_ID'),
+            'client_secret': environ.get('CLIENT_SECRET'),
+            'code': request.args['code']
+        }
+        headers = {'Accept': 'application/json'}
+        r = requests.post(url, params=payload, headers=headers)
+        response = r.json()
+        # get access_token from response and store in session
+        if 'access_token' in response:
+            session['access_token'] = response['access_token']
+        else:
+            app.logger.error('github didn\'t return an access token, oh dear')
+        # send authenticated user where they're supposed to go
+        return redirect(url_for('index'))
+    return '', 404
+
+@app.route('/')
 def index():
-
-	# List of countries for filter
-	country_codes = [['Canada','CAN'],['United States','USA'],['Brazil','BRA'],
-	['France','FRA'],['India','IND'],['Italy','ITA'],['Germany','DEU'],
-	['United Kingdom','GBR'],['China','CHN'],['Japan','JPN']]
-
-	# Parse the POST request countries list
-	if (request.method == 'POST') and request.form:
-		figures = return_figures(request.form)
-		countries_selected = []
-
-		for country in request.form.lists():
-			countries_selected.append(country[1][0])
-	
-	# GET request returns all countries for initial page load
-	else:
-		figures = return_figures()
-		countries_selected = []
-		for country in country_codes:
-			countries_selected.append(country[1])
-
-	# plot ids for the html id tag
-	ids = ['figure-{}'.format(i) for i, _ in enumerate(figures)]
-
-	# Convert the plotly figures to JSON for javascript in html template
-	figuresJSON = json.dumps(figures, cls=plotly.utils.PlotlyJSONEncoder)
-
-	return render_template('index.html', ids=ids,
-		figuresJSON=figuresJSON,
-		all_countries=country_codes,
-		countries_selected=countries_selected)
+    # authenticated?
+    if not 'access_token' in session:
+        return 'Never trust strangers', 404
+    # get username from github api
+    url = 'https://api.github.com/user?access_token={}'
+    r = requests.get(url.format(session['access_token']))
+    try:
+        login = r.json()['login']
+    except AttributeError:
+        app.logger.debug('error getting username from github, whoops')
+		return 'I don't know who you are; I should, but regretfully I don't', 500
+    return 'Hello {}!'.format(login), 200
