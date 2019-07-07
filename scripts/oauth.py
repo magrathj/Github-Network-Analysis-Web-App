@@ -27,7 +27,7 @@ def reddit_callback():
 		abort(403)
 	code = request.args.get('code')
 	# We'll change this next line in just a moment
-	return "got a code! %s" % code
+	return "got a code! %s" % get_token2(code)
 
 
 def get_token(code):
@@ -38,11 +38,32 @@ def get_token(code):
                  "client_id": CLIENT_ID,
                  "client_secret": CLIENT_SECRET,
 				 "redirect_uri": REDIRECT_URI}
+    #https://github.com/login/oauth/access_token?client_id=0f7ac5c75709e1eb1558&redirect_uri=http://localhost:65010/callback&client_secret=6be38a7698c54227cb8d27922ac222115916cbc7&code=40ba2559c0c29b5ae801&state=25d0a78e-1a94-45ef-a7f8-9c8223bee7ed
 	response = requests.post("https://github.com/login/oauth/access_token",
 							 params=post_data)
 	token_json = response.json()
     
 	return token_json["access_token"]
+
+def get_token2(code):
+    save_created_state(state)
+    print("here")
+    params = {"client_id": CLIENT_ID,
+              "redirect_uri": REDIRECT_URI,
+              "client_secret": CLIENT_SECRET,
+              "code": code,
+			  "state": state
+			  }
+    import urllib
+    #url = #"https://github.com/login/oauth/access_token?client_id=0f7ac5c75709e1eb1558&redirect_uri=http://localhost:65010/callback&client_secret=6be38a7698c54227cb8d27922ac222115916cbc7&code=40ba2559c0c29b5ae801&state=25d0a78e-1a94-45ef-a7f8-9c8223bee7ed"
+    url = "https://github.com/login/oauth/access_token?" + urllib.parse.urlencode(params)
+    #print(url) 	
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    response = requests.post(url)
+    #print(response.text)
+    #token_json = response.json()
+    return response.text #token_json["access_token"]
+
 
 def make_authorization_url():
 	# Generate a random string for the state parameter
@@ -55,8 +76,12 @@ def make_authorization_url():
 			  "duration": "temporary",
 			  "scope": "identity"}
 	import urllib
-	url = "https://github.com/login/oauth/authorize?" + urllib.parse.urlencode(params)
+	url = "https://github.com/login/oauth/authorize?" + urllib.parse.urlencode(params) 
+	print(url)
 	return url
+    
+    
+    
 
 # Left as an exercise to the reader.
 # You may want to store valid states in a database or memcache,
