@@ -1,8 +1,12 @@
 from worldbankapp import app
+import json, plotly
+from flask import render_template, request, Response, jsonify
+from scripts.data import return_figures
 
-from Flask import Flask, redirect, request, session
+from flask import flask, redirect, request, session
 from os import environ
 
+app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Waffling on is really great for these secrets brandy cactus beartrap'
 
 @app.route('/callback')
@@ -38,5 +42,9 @@ def index():
         login = r.json()['login']
     except AttributeError:
         app.logger.debug('error getting username from github, whoops')
-		return 'I don't know who you are; I should, but regretfully I don't', 500
+        return 'I dont know who you are; I should, but regretfully I dont', 500
     return 'Hello {}!'.format(login), 200
+
+
+if __name__ == '__main__':
+	app.run(debug=True, port=65010)
