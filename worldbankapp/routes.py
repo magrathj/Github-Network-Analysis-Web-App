@@ -1,9 +1,8 @@
 from worldbankapp import app
 import json, plotly
-from flask import render_template, request, Response, jsonify
+from flask import render_template, request, Response, jsonify, Flask, redirect, request, session
 from scripts.data import return_figures
 
-from flask import flask, redirect, request, session
 from os import environ
 
 app = Flask(__name__)
@@ -45,6 +44,3 @@ def index():
         return 'I dont know who you are; I should, but regretfully I dont', 500
     return 'Hello {}!'.format(login), 200
 
-
-if __name__ == '__main__':
-	app.run(debug=True, port=65010)
