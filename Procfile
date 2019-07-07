@@ -1,1 +1,1 @@
-web gunicorn github-network-app:app
+web gunicorn worldbank:app
