@@ -27,7 +27,7 @@ def reddit_callback():
 		abort(403)
 	code = request.args.get('code')
 	# We'll change this next line in just a moment
-	return "got a code! %s" % get_user_emails(get_token(code))
+	return "got a code! %s" % get_repos(get_users(get_token(code)))
 
 def get_token(code):
     save_created_state(state)
@@ -71,12 +71,36 @@ def get_users(access_token):
 	response = requests.get(url)
 	return response.json()
 
-def get_user_emails(access_token):
-	json_response = get_users(access_token)
+def get_user_emails(json_response):
 	email = json_response['email']
 	return email
-	    
+
+def get_user_login_name(json_response):
+	login = json_response['login']
+	return login	    
     
+def get_user_name(json_response):
+	name = json_response['name']
+	return name	    
+    
+def get_followers(json_response):
+	url = json_response['followers_url']
+	import urllib 
+	response = requests.get(url)
+	return response.json()
+   
+def get_repos(json_response):
+	url = json_response['repos_url']
+	import urllib 
+	response = requests.get(url)
+	return response.json()
+
+
+def get_collaborators(json_repos, access_token):
+	params = {"access_token": access_token}
+	import urllib
+	url = "https://api.github.com/repos/magrathj/shinyforms/collaborators" + urllib.parse.urlencode(params)
+	return url
 
 # Left as an exercise to the reader.
 # You may want to store valid states in a database or memcache,
@@ -85,6 +109,23 @@ def save_created_state(state):
 	pass
 def is_valid_state(state):
 	return True
+
+## TODO create class repo to hold individual repos
+class Repo:
+	def __init__(self, repo_name, repo_url):
+		self.repo_name = repo_name
+		self.repo_url = repo_url
+
+
+## TODO create class user to hold individual user details
+class User:
+	def __init__(self, name, github_url, login):
+		self.name = name
+		self.github_url = github_url
+		self.login = login
+
+
+
 
 
 if __name__ == '__main__':
