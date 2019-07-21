@@ -22,6 +22,5 @@ def index():
 
 @app.route("/forward/", methods=['POST'])
 def move_forward():
-    #Moving forward code
-    forward_message = "Moving Forward..."
-    return render_template('index.html', message=forward_message);
+    return redirect("https://github.com/magrathj/")
+
