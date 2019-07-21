@@ -25,7 +25,7 @@ def move_forward():
     return redirect(make_authorization_url())
 
 
-@app.route('/about/')
+@app.route('/about/', methods=['POST', 'GET'])
 def aboutpage():
     title = "Github Network App"
     paragraph = ["This app"]
