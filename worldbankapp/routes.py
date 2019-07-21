@@ -25,6 +25,14 @@ def move_forward():
     return redirect(make_authorization_url())
 
 
+@app.route('/about')
+def aboutpage():
+    title = "Github Network App"
+    paragraph = ["blah blah blah memememememmeme blah blah memememe"]
+    pageType = 'about'
+    return render_template("about.html", title=title, paragraph=paragraph, pageType=pageType)
+
+
 @app.route('/callback')
 def reddit_callback():
 	error = request.args.get('error', '')
