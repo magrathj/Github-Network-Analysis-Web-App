@@ -30,7 +30,7 @@ def aboutpage():
     title = "Github Network App"
     paragraph = ["This app"]
     pageType = 'about'
-    return render_template("index.html", title=title, paragraph=paragraph, pageType=pageType)
+    return render_template("index.html")
 
 
 @app.route('/callback')
