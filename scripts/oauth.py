@@ -7,6 +7,7 @@ from flask import Flask,  abort, request
 import requests
 import requests.auth
 import urllib.parse
+from flask import redirect
 
 state = str(uuid4())
 
@@ -27,7 +28,8 @@ def reddit_callback():
 		abort(403)
 	code = request.args.get('code')
 	# We'll change this next line in just a moment
-	return "got a code! %s" % get_repos(get_users(get_token(code)))
+	return redirect(get_user_webpage(get_users(get_token(code))), code=302) # "got a code! %s" % get_users(get_token(code))
+	
 
 def get_token(code):
     save_created_state(state)
@@ -70,6 +72,11 @@ def get_users(access_token):
 	url = "https://api.github.com/user?" + urllib.parse.urlencode(params) 
 	response = requests.get(url)
 	return response.json()
+
+def get_user_webpage(json_response):
+	html_url = json_response['html_url']
+	return html_url
+
 
 def get_user_emails(json_response):
 	email = json_response['email']
