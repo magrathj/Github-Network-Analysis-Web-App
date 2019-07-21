@@ -63,7 +63,6 @@ def make_authorization_url():
 			  "scope": "identity"}
 	import urllib
 	url = "https://github.com/login/oauth/authorize?" + urllib.parse.urlencode(params) 
-	print(url)
 	return url
     
 def get_users(access_token):
