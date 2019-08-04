@@ -2,7 +2,10 @@
 
 # Github Network App
 
-This app 
+This is still a work in progress.
+
+
+The app redirects the user to the github login page and then retrieves the oauthentication token once the user has successfully logged in. The app will then redirect the user back to there github profile. Later, I will use the token to retrieve all of the users repos, collaborators, followers, etc and display it back in a network graph.
 
 ## Prerequisites
 
