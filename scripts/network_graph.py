@@ -9,6 +9,7 @@ import pandas as pd
 import numpy as np
 import json
 
+
 def create_plot():
 
 
@@ -30,19 +31,24 @@ def create_plot():
     return graphJSON
 
 
-def createNetworkGraph():
+def createNetworkGraph(json_dict, repo_owner):
+    labels = []
+    labels.append(repo_owner)
+
+    for json_object in json_dict:
+        labels.append(json_object['name'])
 
     G=nx.Graph()#  G is an empty Graph
-    my_nodes=range(9)
+    num_nodes = len(json_dict) + 1
+    my_nodes=range(num_nodes)
     G.add_nodes_from(my_nodes)
-    my_edges=[(0,1), (0,2), (1,3), (1,4), (1,7), (2,5), (2,8), (3, 4), (3,5),(4,6), (4,7), (4,8), (5,7)]
-    G.add_edges_from(my_edges)
-    G.add_edge(6,8)
+    #my_edges=[(0,1), (0,2), (0,3), (0,4), (0,5), (0,6), (0,7)]
+    #G.add_edges_from(my_edges)
+
+    for i in range(1, len(json_dict) + 1):    
+        G.add_edge(0, i)
 
     pos=nx.fruchterman_reingold_layout(G)   
-    pos
-
-    labels=['Bank-1', 'Property','Assets', 'Bank-2', 'Offshore', 'Paradise-papers', 'Glencore', 'Hoifu-Energy', 'Bank-3']
 
     Xn=[pos[k][0] for k in range(len(pos))]
     Yn=[pos[k][1] for k in range(len(pos))]
