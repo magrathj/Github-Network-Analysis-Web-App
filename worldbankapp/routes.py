@@ -1,4 +1,4 @@
-#from worldbankapp import app
+from worldbankapp import app
 
 import json, plotly
 from flask import render_template, request, Response, jsonify,  Flask,  abort, redirect
@@ -12,13 +12,10 @@ from plotly.offline import download_plotlyjs, init_notebook_mode,  iplot, plot
 
 CLIENT_ID = "0f7ac5c75709e1eb1558"
 CLIENT_SECRET = "6be38a7698c54227cb8d27922ac222115916cbc7"
-#REDIRECT_URI = "https://github-network-app.herokuapp.com/callback"
-REDIRECT_URI = "http://127.0.0.1:5000/callback"
+REDIRECT_URI = "https://github-network-app.herokuapp.com/callback"
+#REDIRECT_URI = "http://127.0.0.1:5000/callback"
 
 state = str(uuid4())
-
-
-app = Flask(__name__)
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -257,6 +254,3 @@ class Github:
 		self.client_id = client_id
 		self.client_secret = client_secret
 
-
-if __name__ == '__main__':
-    app.run()
