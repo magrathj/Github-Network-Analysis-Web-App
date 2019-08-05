@@ -1,18 +1,25 @@
-from worldbankapp import app
+#from worldbankapp import app
 
 import json, plotly
 from flask import render_template, request, Response, jsonify,  Flask,  abort, redirect
-from scripts.data import return_figures
 from uuid import uuid4
 import requests
 import requests.auth
 import urllib.parse
+import networkx as nx
+from plotly.offline import download_plotlyjs, init_notebook_mode,  iplot, plot
+
 
 CLIENT_ID = "0f7ac5c75709e1eb1558"
 CLIENT_SECRET = "6be38a7698c54227cb8d27922ac222115916cbc7"
-REDIRECT_URI = "https://github-network-app.herokuapp.com/callback"
+#REDIRECT_URI = "https://github-network-app.herokuapp.com/callback"
+REDIRECT_URI = "http://127.0.0.1:5000/callback"
 
 state = str(uuid4())
+
+
+app = Flask(__name__)
+
 
 @app.route('/', methods=['POST', 'GET'])
 @app.route('/index', methods=['POST', 'GET'])
@@ -44,8 +51,17 @@ def reddit_callback():
 		abort(403)
 	code = request.args.get('code')
 	# We'll change this next line in just a moment
-	return redirect(get_user_webpage(get_users(get_token(code))), code=302) # "got a code! %s" % get_users(get_token(code))
-	
+	#return redirect(get_user_webpage(get_users(get_token(code))), code=302) # "got a code! %s" % get_users(get_token(code))
+	print("here")
+	user = get_users(get_token(code))
+	repo_url = get_repos(user)
+	print(repo_url)
+	json_output = get_users_repos_json_response(repo_url)
+	#print(json_output)
+
+	bar = createNetworkGraph(json_output, get_user_login_name(user))
+	return render_template('plot.html', plot=bar)
+
 
 def get_token(code):
     save_created_state(state)
@@ -113,9 +129,14 @@ def get_followers(json_response):
    
 def get_repos(json_response):
 	url = json_response['repos_url']
-	import urllib 
-	response = requests.get(url)
-	return response.json()
+	return url
+
+
+def get_users_repos_json_response(url):    
+    response = requests.get(url)
+    distros_dict = json.loads(response.text)
+    return(distros_dict)
+
 
 
 def get_collaborators(json_repos, access_token):
@@ -123,6 +144,89 @@ def get_collaborators(json_repos, access_token):
 	import urllib
 	url = "https://api.github.com/repos/magrathj/shinyforms/collaborators" + urllib.parse.urlencode(params)
 	return url
+
+
+
+def createNetworkGraph(json_dict, repo_owner):
+    labels = []
+    labels.append(repo_owner)
+
+    for json_object in json_dict:
+        labels.append(json_object['name'])
+
+    G=nx.Graph()#  G is an empty Graph
+    num_nodes = len(json_dict) + 1
+    my_nodes=range(num_nodes)
+    G.add_nodes_from(my_nodes)
+    #my_edges=[(0,1), (0,2), (0,3), (0,4), (0,5), (0,6), (0,7)]
+    #G.add_edges_from(my_edges)
+
+    for i in range(1, len(json_dict) + 1):    
+        G.add_edge(0, i)
+
+    pos=nx.fruchterman_reingold_layout(G)   
+
+    Xn=[pos[k][0] for k in range(len(pos))]
+    Yn=[pos[k][1] for k in range(len(pos))]
+
+
+    trace_nodes=dict(type='scatter',
+                    x=Xn, 
+                    y=Yn,
+                    mode='markers',
+                    marker=dict(size=28, color='rgb(0,240,0)'),
+                    text=labels,
+                    hoverinfo='text')
+
+    Xe=[]
+    Ye=[]
+    for e in G.edges():
+        Xe.extend([pos[e[0]][0], pos[e[1]][0], None])
+        Ye.extend([pos[e[0]][1], pos[e[1]][1], None])
+
+    trace_edges=dict(type='scatter',
+                    mode='lines',
+                    x=Xe,
+                    y=Ye,
+                    line=dict(width=1, color='rgb(25,25,25)'),
+                    hoverinfo='none' 
+                    )
+
+    axis=dict(showline=False, # hide axis line, grid, ticklabels and  title
+            zeroline=False,
+            showgrid=False,
+            showticklabels=False,
+            title='' 
+            )
+    layout=dict(title= 'My Graph',  
+                font= dict(family='Balto'),
+                width=600,
+                height=600,
+                autosize=False,
+                showlegend=False,
+                xaxis=axis,
+                yaxis=axis,
+                margin=dict(
+                l=40,
+                r=40,
+                b=85,
+                t=100,
+                pad=0,
+        
+        ),
+        hovermode='closest',
+        plot_bgcolor='#efecea', #set background color            
+        )
+
+
+    fig = dict(data=[trace_edges, trace_nodes], layout=layout)
+    graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return(graphJSON)
+
+
+
+
 
 # Left as an exercise to the reader.
 # You may want to store valid states in a database or memcache,
@@ -153,3 +257,6 @@ class Github:
 		self.client_id = client_id
 		self.client_secret = client_secret
 
+
+if __name__ == '__main__':
+    app.run()

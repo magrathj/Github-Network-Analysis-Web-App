@@ -12,16 +12,18 @@ app = Flask(__name__)
 #    distros_dict = json.load(f)
 
 
-url = "https://api.github.com/users/magrathj/repos"
-response = requests.get(url)
-distros_dict = json.loads(response.text)
 
+def get_users_repos_json_response(url):    
+    response = requests.get(url)
+    distros_dict = json.loads(response.text)
+    return(distros_dict)
 
 
 @app.route('/')
 def index():
+    distros_dict = get_users_repos_json_response(url = "https://api.github.com/users/magrathj/repos")
     bar = createNetworkGraph(distros_dict, 'magrathj')
-    return render_template('index.html', plot=bar)
+    return render_template('plot.html', plot=bar)
 
 if __name__ == '__main__':
     app.run()
