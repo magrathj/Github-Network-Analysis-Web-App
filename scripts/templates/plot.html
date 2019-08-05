@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-
 <html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>My First Dashboard</title>
 
-<head>
-
-<title>Github Network App</title>
 
 <!--import script files needed fro plotly and bootstrap-->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -12,36 +11,33 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
 </head>
 
 <body>
 
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
 		<a class="navbar-brand" href="#">Github Network App</a>
-	</nav>
+    </nav>
+    
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="chart" id="bargraph">
 
-	
+            </div>
+        </div>
+    </div>
+</div>
 
-	
+<div class="chart" id="bargraph">
+    <script>
+        var graphs = {{plot | safe}};
+        Plotly.plot('bargraph',graphs,{});
+    </script>
+</div>
 
-
-	<!--middle section-->       
-	<div class="row">
-		<form action="/forward/" method="post">
-			<button name="forwardBtn" type="submit">Authenticate with Github</button>
-		</form>
-	</div>
-
-	<!--middle section-->       
-	<div class="row">
-		<form action="/about/" method="post">
-			<button name="aboutBtn" type="submit">About App</button>
-		</form>
-	</div>
-
-<!--footer section-->				
-<div id="footer" class="container"></div>
 
 </body>
 </html>
