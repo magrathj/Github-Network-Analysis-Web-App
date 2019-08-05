@@ -9,6 +9,7 @@ import requests.auth
 import urllib.parse
 from flask import redirect
 
+
 state = str(uuid4())
 
 app = Flask(__name__)
@@ -28,7 +29,8 @@ def reddit_callback():
 		abort(403)
 	code = request.args.get('code')
 	# We'll change this next line in just a moment
-	return redirect(get_user_webpage(get_users(get_token(code))), code=302) # "got a code! %s" % get_users(get_token(code))
+	
+	return get_repos(get_users(get_token(code))).text #redirect(get_user_webpage(get_users(get_token(code))), code=302) # "got a code! %s" % get_users(get_token(code))
 	
 
 def get_token(code):
@@ -99,7 +101,7 @@ def get_repos(json_response):
 	url = json_response['repos_url']
 	import urllib 
 	response = requests.get(url)
-	return response.json()
+	return response
 
 
 def get_collaborators(json_repos, access_token):
