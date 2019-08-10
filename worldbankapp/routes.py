@@ -223,3 +223,7 @@ def createNetworkGraph(json_dict, repo_owner):
     return(graphJSON)
 
 
+def save_created_state(state):
+	pass
+def is_valid_state(state):
+	return True
