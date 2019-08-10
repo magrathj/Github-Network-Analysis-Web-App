@@ -35,7 +35,6 @@ def aboutpage():
     paragraph = ["This app"]
     pageType = 'about'
     return render_template("about.html", title=title, paragraph=paragraph, pageType=pageType)
-    #return redirect(make_authorization_url())
 
 @app.route('/callback')
 def reddit_callback():
@@ -51,7 +50,8 @@ def reddit_callback():
 	repo_url = get_repos(user)
 	json_output = get_users_repos_json_response(repo_url) 
     bar = createNetworkGraph(json_output, get_user_login_name(user))
-	return render_template('plot.html', plot=bar)
+	print(get_collaborators(json_output, token))
+    return render_template('plot.html', plot=bar)
 
 
 def get_token(code):
@@ -129,12 +129,10 @@ def get_users_repos_json_response(url):
     return(distros_dict)
 
 
-def get_collaborators(json_repos, access_token):
+def get_collaborators(json_response, access_token):
 	url = json_response['collaborators_url']
     json_collaborator = get_list_of_collaborators(get_collaborator_url(url, access_token))
-    return url
-
-
+    return json_collaborator
 
 def get_collaborator_url(collaborators_url, access_token):
 	params = {"access_token": access_token}
@@ -224,36 +222,4 @@ def createNetworkGraph(json_dict, repo_owner):
 
     return(graphJSON)
 
-
-
-
-
-# Left as an exercise to the reader.
-# You may want to store valid states in a database or memcache,
-# or perhaps cryptographically sign them and verify upon retrieval.
-def save_created_state(state):
-	pass
-def is_valid_state(state):
-	return True
-
-## TODO create class repo to hold individual repos
-class Repo:
-	def __init__(self, repo_name, repo_url):
-		self.repo_name = repo_name
-		self.repo_url = repo_url
-
-
-## TODO create class user to hold individual user details
-class User:
-	def __init__(self, name, github_url, login):
-		self.name = name
-		self.github_url = github_url
-		self.login = login
-
-
-## TODO create class Github to handle all Github methods
-class Github:
-	def __init__(self, client_id, client_secret):
-		self.client_id = client_id
-		self.client_secret = client_secret
 
