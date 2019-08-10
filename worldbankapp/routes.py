@@ -44,9 +44,9 @@ def reddit_callback():
 	state = request.args.get('state', '')
 	if not is_valid_state(state):
 		abort(403)
-	code = request.args.get('code')
-    token = get_token(code)
-	user = get_users(token)
+	code = request.args.get('code')    
+	token = get_token(code)
+    user = get_users(token)
 	repo_url = get_repos(user)
 	json_output = get_users_repos_json_response(repo_url) 
     bar = createNetworkGraph(json_output, get_user_login_name(user))
