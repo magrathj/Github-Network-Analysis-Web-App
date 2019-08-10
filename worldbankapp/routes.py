@@ -130,7 +130,7 @@ def get_users_repos_json_response(url):
 
 
 def get_collaborators(json_response, access_token):
-	url = json_response['collaborators_url']
+    url = json_response['collaborators_url']
     json_collaborator = get_list_of_collaborators(get_collaborator_url(url, access_token))
     return json_collaborator
 
