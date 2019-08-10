@@ -38,19 +38,19 @@ def aboutpage():
 
 @app.route('/callback')
 def reddit_callback():
-	error = request.args.get('error', '')
-	if error:
-		return "Error: " + error
-	state = request.args.get('state', '')
-	if not is_valid_state(state):
-		abort(403)
-	code = request.args.get('code')    
-	token = get_token(code)
+    error = request.args.get('error', '')
+    if error:
+    	return "Error: " + error
+    state = request.args.get('state', '')
+    if not is_valid_state(state):
+    	abort(403)
+    code = request.args.get('code')    
+    token = get_token(code)
     user = get_users(token)
-	repo_url = get_repos(user)
-	json_output = get_users_repos_json_response(repo_url) 
+    repo_url = get_repos(user)
+    json_output = get_users_repos_json_response(repo_url) 
     bar = createNetworkGraph(json_output, get_user_login_name(user))
-	print(get_collaborators(json_output, token))
+    print(get_collaborators(json_output, token))
     return render_template('plot.html', plot=bar)
 
 
