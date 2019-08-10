@@ -143,7 +143,7 @@ def get_collaborator_url(collaborators_url, access_token):
 def get_list_of_collaborators(url):
     response = requests.get(url)
     distros_dict = json.loads(response.text)
-    return collaborators
+    return distros_dict
 
 
 
