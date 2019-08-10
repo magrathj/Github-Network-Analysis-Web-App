@@ -132,6 +132,7 @@ def get_users_repos_json_response(url):
 def get_collaborators(json_response, access_token):
     for json_object in json_response:
         url = json_object['collaborators_url']
+        print(url)
         json_collaborator = get_list_of_collaborators(get_collaborator_url(url, access_token))
         print(json_collaborator)
     return ''
