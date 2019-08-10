@@ -134,7 +134,7 @@ def get_collaborators(json_response, access_token):
     for json_object in json_response:
         url = json_object['contributors_url']
         print(url)
-        json_collaborator = get_list_of_collaborators(get_collaborator_url(url, access_token))
+        json_collaborator = get_list_of_collaborators(url)
         print(json_collaborator)
     return ''
 
