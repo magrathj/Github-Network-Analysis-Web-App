@@ -8,7 +8,27 @@ import plotly.graph_objs as go
 import pandas as pd
 import numpy as np
 import json
+from operator import itemgetter
 
+import matplotlib.pyplot as plt
+import networkx as nx
+
+def createEgoGraph():
+    # Create a BA model graph
+    n = 1000
+    m = 2
+    G = nx.generators.barabasi_albert_graph(n, m)
+    # find node with largest degree
+    node_and_degree = G.degree()
+    (largest_hub, degree) = sorted(node_and_degree, key=itemgetter(1))[-1]
+    # Create ego graph of main hub
+    hub_ego = nx.ego_graph(G, largest_hub)
+    # Draw graph
+    pos = nx.spring_layout(hub_ego)
+    nx.draw(hub_ego, pos, node_color='b', node_size=50, with_labels=False)
+    # Draw ego as large and red
+    nx.draw_networkx_nodes(hub_ego, pos, nodelist=[largest_hub], node_size=300, node_color='r')
+    plt.show()
 
 def create_plot():
 
@@ -38,17 +58,18 @@ def createNetworkGraph(json_dict, repo_owner):
     for json_object in json_dict:
         labels.append(json_object['name'])
 
-    G=nx.Graph()#  G is an empty Graph
+    G=nx.Graph()
     num_nodes = len(json_dict) + 1
     my_nodes=range(num_nodes)
     G.add_nodes_from(my_nodes)
-    #my_edges=[(0,1), (0,2), (0,3), (0,4), (0,5), (0,6), (0,7)]
-    #G.add_edges_from(my_edges)
 
-    for i in range(1, len(json_dict) + 1):    
+    color_map = []
+    color_map.append('black')
+    for i in range(1, num_nodes):    
         G.add_edge(0, i)
+        color_map.append('blue')
 
-    pos=nx.fruchterman_reingold_layout(G)   
+    pos=nx.spring_layout(G)   
 
     Xn=[pos[k][0] for k in range(len(pos))]
     Yn=[pos[k][1] for k in range(len(pos))]
@@ -58,7 +79,7 @@ def createNetworkGraph(json_dict, repo_owner):
                     x=Xn, 
                     y=Yn,
                     mode='markers',
-                    marker=dict(size=28, color='rgb(0,240,0)'),
+                    marker=dict(size=40, color=color_map),
                     text=labels,
                     hoverinfo='text')
 
@@ -82,10 +103,10 @@ def createNetworkGraph(json_dict, repo_owner):
             showticklabels=False,
             title='' 
             )
-    layout=dict(title= 'My Graph',  
+    layout=dict(title= '<br>Graph Network Repo',  
                 font= dict(family='Balto'),
-                width=600,
-                height=600,
+                width=1000,
+                height=1000,
                 autosize=False,
                 showlegend=False,
                 xaxis=axis,
@@ -109,3 +130,5 @@ def createNetworkGraph(json_dict, repo_owner):
     return(graphJSON)
 
 
+#if __name__ == '__main__':
+#    createEgoGraph()

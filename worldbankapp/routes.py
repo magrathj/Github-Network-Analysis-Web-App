@@ -35,7 +35,7 @@ def aboutpage():
     paragraph = ["This app"]
     pageType = 'about'
     return render_template("about.html", title=title, paragraph=paragraph, pageType=pageType)
-
+    #return redirect(make_authorization_url())
 
 @app.route('/callback')
 def reddit_callback():
@@ -44,19 +44,13 @@ def reddit_callback():
 		return "Error: " + error
 	state = request.args.get('state', '')
 	if not is_valid_state(state):
-		# Uh-oh, this request wasn't started by us!
 		abort(403)
 	code = request.args.get('code')
-	# We'll change this next line in just a moment
-	#return redirect(get_user_webpage(get_users(get_token(code))), code=302) # "got a code! %s" % get_users(get_token(code))
-	print("here")
-	user = get_users(get_token(code))
+    token = get_token(code)
+	user = get_users(token)
 	repo_url = get_repos(user)
-	print(repo_url)
-	json_output = get_users_repos_json_response(repo_url)
-	#print(json_output)
-
-	bar = createNetworkGraph(json_output, get_user_login_name(user))
+	json_output = get_users_repos_json_response(repo_url) 
+    bar = createNetworkGraph(json_output, get_user_login_name(user))
 	return render_template('plot.html', plot=bar)
 
 
@@ -135,12 +129,23 @@ def get_users_repos_json_response(url):
     return(distros_dict)
 
 
-
 def get_collaborators(json_repos, access_token):
+	url = json_response['collaborators_url']
+    json_collaborator = get_list_of_collaborators(get_collaborator_url(url, access_token))
+    return url
+
+
+
+def get_collaborator_url(collaborators_url, access_token):
 	params = {"access_token": access_token}
 	import urllib
-	url = "https://api.github.com/repos/magrathj/shinyforms/collaborators" + urllib.parse.urlencode(params)
+	url = collaborators_url + urllib.parse.urlencode(params)
 	return url
+
+def get_list_of_collaborators(url):
+    response = requests.get(url)
+    distros_dict = json.loads(response.text)
+    return collaborators
 
 
 
@@ -155,8 +160,6 @@ def createNetworkGraph(json_dict, repo_owner):
     num_nodes = len(json_dict) + 1
     my_nodes=range(num_nodes)
     G.add_nodes_from(my_nodes)
-    #my_edges=[(0,1), (0,2), (0,3), (0,4), (0,5), (0,6), (0,7)]
-    #G.add_edges_from(my_edges)
 
     for i in range(1, len(json_dict) + 1):    
         G.add_edge(0, i)

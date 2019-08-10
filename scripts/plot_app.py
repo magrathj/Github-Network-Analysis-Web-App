@@ -8,11 +8,6 @@ import requests.auth
 app = Flask(__name__)
 
 
-#with open('repos.json', 'r') as f:
-#    distros_dict = json.load(f)
-
-
-
 def get_users_repos_json_response(url):    
     response = requests.get(url)
     distros_dict = json.loads(response.text)
