@@ -1,5 +1,5 @@
 from flask import Flask, render_template #this has changed
-from network_graph import create_plot, createNetworkGraph
+from network_graph import create_plot, createNetworkGraph,  createD3NetworkGraph
 import json
 import urllib
 import requests
@@ -14,11 +14,17 @@ def get_users_repos_json_response(url):
     return(distros_dict)
 
 
+#@app.route('/')
+#def index():
+#    distros_dict = get_users_repos_json_response(url = "https://api.github.com/users/magrathj/repos")
+#    bar = createNetworkGraph(distros_dict, 'magrathj')
+#    return render_template('plot.html', plot=bar)
+
 @app.route('/')
 def index():
-    distros_dict = get_users_repos_json_response(url = "https://api.github.com/users/magrathj/repos")
-    bar = createNetworkGraph(distros_dict, 'magrathj')
-    return render_template('plot.html', plot=bar)
+    bar = createD3NetworkGraph()
+    print(bar)
+    return render_template('d3.html', plot=bar)
 
 if __name__ == '__main__':
     app.run()

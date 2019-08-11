@@ -138,11 +138,6 @@ def get_collaborators(json_response, access_token):
         print(json_collaborator)
     return ''
 
-def get_collaborator_url(collaborators_url, access_token):
-	params = {"access_token": access_token}
-	import urllib
-	url = collaborators_url + urllib.parse.urlencode(params)
-	return url
 
 def get_list_of_collaborators(url):
     response = requests.get(url)

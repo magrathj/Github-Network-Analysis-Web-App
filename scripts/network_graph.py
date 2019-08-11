@@ -13,6 +13,11 @@ from operator import itemgetter
 import matplotlib.pyplot as plt
 import networkx as nx
 
+import json
+import numpy as np
+import networkx as nx
+import matplotlib.pyplot as plt
+
 def createEgoGraph():
     # Create a BA model graph
     n = 1000
@@ -128,6 +133,23 @@ def createNetworkGraph(json_dict, repo_owner):
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
     return(graphJSON)
+
+
+
+
+def createD3NetworkGraph():
+    g = nx.karate_club_graph()
+    fig, ax = plt.subplots(1, 1, figsize=(8, 6));
+    nx.draw_networkx(g, ax=ax)
+    nodes = [{'name': str(i), 'club': g.node[i]['club']}
+         for i in g.nodes()]
+    links = [{'source': u[0], 'target': u[1]}
+            for u in g.edges()]
+    graphJSON = json.dumps({'nodes': nodes, 'links': links}, indent=4,)
+    return(graphJSON)
+    #with open('graph.json', 'w') as f:
+    #    json.dump({'nodes': nodes, 'links': links},
+    #          f, indent=4,)
 
 
 #if __name__ == '__main__':
