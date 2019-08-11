@@ -1,5 +1,5 @@
 from flask import Flask, render_template #this has changed
-from network_graph import create_plot, createNetworkGraph,  createD3NetworkGraph
+from network_graph import create_plot, createNetworkGraph,  createD3NetworkGraph, createD3NetworkGraphSecond
 import json
 import urllib
 import requests
@@ -22,9 +22,11 @@ def get_users_repos_json_response(url):
 
 @app.route('/')
 def index():
-    bar = createD3NetworkGraph()
-    print(bar)
-    return render_template('d3.html', plot=bar)
+    #return render_template('d3.html')
+    chart_data = createD3NetworkGraph()
+    data = {'chart_data': chart_data}
+    return render_template("d3.html", data=data)
+
 
 if __name__ == '__main__':
     app.run()
