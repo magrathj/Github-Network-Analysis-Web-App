@@ -12,6 +12,7 @@ from flask import redirect
 
 state = str(uuid4())
 
+
 app = Flask(__name__)
 @app.route('/')
 def homepage():
@@ -30,7 +31,7 @@ def reddit_callback():
 	code = request.args.get('code')
 	# We'll change this next line in just a moment
 	
-	return get_repos(get_users(get_token(code))).text #redirect(get_user_webpage(get_users(get_token(code))), code=302) # "got a code! %s" % get_users(get_token(code))
+	return get_following(get_users(get_token(code))).text #get_repos(get_users(get_token(code))).text #redirect(get_user_webpage(get_users(get_token(code))), code=302) # "got a code! %s" % get_users(get_token(code))
 	
 
 def get_token(code):
@@ -96,6 +97,14 @@ def get_followers(json_response):
 	import urllib 
 	response = requests.get(url)
 	return response.json()
+
+def get_following(json_response):
+	url = json_response['following_url']
+	import urllib 
+	url, _ = url.split('{')
+	print(url)
+	response = requests.get(url)
+	return response
    
 def get_repos(json_response):
 	url = json_response['repos_url']
