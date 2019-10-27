@@ -10,25 +10,6 @@ import numpy as np
 import json
 
 
-def create_plot():
-
-
-    N = 40
-    x = np.linspace(0, 1, N)
-    y = np.random.randn(N)
-    df = pd.DataFrame({'x': x, 'y': y}) # creating a sample dataframe
-
-
-    data = [
-        go.Bar(
-            x=df['x'], # assign x as the dataframe column 'x'
-            y=df['y']
-        )
-    ]
-
-    graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
-
-    return graphJSON
 
 
 def createNetworkGraph(json_dict, repo_owner):
@@ -42,8 +23,6 @@ def createNetworkGraph(json_dict, repo_owner):
     num_nodes = len(json_dict) + 1
     my_nodes=range(num_nodes)
     G.add_nodes_from(my_nodes)
-    #my_edges=[(0,1), (0,2), (0,3), (0,4), (0,5), (0,6), (0,7)]
-    #G.add_edges_from(my_edges)
 
     for i in range(1, len(json_dict) + 1):    
         G.add_edge(0, i)
