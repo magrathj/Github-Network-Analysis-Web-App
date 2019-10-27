@@ -12,6 +12,7 @@ from pymongo import MongoClient
 
 client = MongoClient('localhost', 27017)
 db = client['github_db']
+
 coll = db['users']
 coll_repos = db['repos']
 coll_followers = db['followers']
@@ -152,6 +153,7 @@ def get_followers(json_response):
 	return url
 
 def get_following(json_response):
+	print(json_response)
 	url = json_response['following_url']
 	import urllib 
 	url, _ = url.split('{')
@@ -159,8 +161,9 @@ def get_following(json_response):
 	response = requests.get(url).json()
 	url = []
 	for input in response:
+		print(input)
 		url.append(input['url'])
-		print(input['url'])
+		#print(input['url'])
 	return url
   
 
