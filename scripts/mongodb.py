@@ -31,6 +31,14 @@ def get_specific_user(login_name):
         print(x)
 
 
+def check_user_in_db(login_name, collection_name):
+    check_coll = db[collection_name]
+    myquery = { "login": login_name }
+    mydoc = coll_users.find(myquery)
+    # check whether or not it is null
+    # if null then return fine else return exists already
+
+
 def get_users_repos(login_name):   
     myquery = { "full_name": { "$gt": login_name } }
     mydoc = coll_repos.find(myquery)
@@ -46,10 +54,10 @@ def drop_collections():
 
 
 def main():
-    names = get_all_users()
-    for x in names:
-        print(x)
-
+    #names = get_all_users()
+    #for x in names:
+    #    print(x)
+    check_user_in_db(login_name="daattali", collection_name='users')
 
 if __name__ == '__main__':
     main()
