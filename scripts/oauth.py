@@ -14,6 +14,9 @@ client = MongoClient('localhost', 27017)
 db = client['github_db']
 coll = db['users']
 coll_repos = db['repos']
+coll_followers = db['followers']
+coll_followering = db['followering']
+
 
 state = str(uuid4())
 
@@ -118,7 +121,7 @@ def get_new_users(url, access_token, mycol):
 	#x = mycol.insert_one(response_json)
 	repos = get_repos(response_json)
 	repos_json = repos.json()
-	x = coll_repos.insert_many(repos_json)
+	#x = coll_repos.insert_many(repos_json)
 	return response.json()
 
 def get_user_webpage(json_response):
@@ -166,8 +169,8 @@ def get_repos(json_response):
 	import urllib 
 	response = requests.get(url)
 	response_json = response.json()
-	x = coll_repos.insert_many(response_json)
-	print(x.inserted_ids)
+	#x = coll_repos.insert_many(response_json)
+	#print(x.inserted_ids)
 	return response
 
 
