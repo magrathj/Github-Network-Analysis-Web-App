@@ -8,7 +8,11 @@ import requests
 import requests.auth
 import urllib.parse
 from flask import redirect
+from pymongo import MongoClient
 
+client = MongoClient('localhost', 27017)
+db = client['github_db']
+coll_repos = db['repos']
 
 state = str(uuid4())
 
@@ -30,9 +34,38 @@ def reddit_callback():
 		abort(403)
 	code = request.args.get('code')
 	# We'll change this next line in just a moment
+	access_token = get_token(code)
+	get_initial_user = get_users(access_token)
+	following_urls = get_following(get_initial_user)
+
+	for url in following_urls:
+		print(get_new_users(url, access_token, coll))
+	return("hey")
+	#return get_following(get_users(get_token(code))).text #get_repos(get_users(get_token(code))).text #redirect(get_user_webpage(get_users(get_token(code))), code=302) # "got a code! %s" % get_users(get_token(code))
 	
-	return get_following(get_users(get_token(code))).text #get_repos(get_users(get_token(code))).text #redirect(get_user_webpage(get_users(get_token(code))), code=302) # "got a code! %s" % get_users(get_token(code))
-	
+
+def recursive_get_user_data(following_url, following_urls, urls_seen, access_token, count):
+	user_data = get_new_users(following_url, access_token)
+	urls = get_following(user_data)
+	# expend differences onto following_urls
+	# get url from user_data and pop from list
+	# append url from user_data in list of seen 
+	# count = count + 1
+	# recursive_get_user_data(following_url, following_urls, urls_seen, access_token, count)
+
+
+def recursive_get_user_data_v2(following_urls, urls_seen, access_token, count):
+	if count == 3:
+		return()
+	user_data = get_new_users(following_urls, access_token)
+	urls = get_following(user_data)
+	# expend differences onto following_urls
+	# get url from user_data and pop from list
+	# append url from user_data in list of seen 
+	# count = count + 1
+	# recursive_get_user_data(following_url, following_urls, urls_seen, access_token, count)
+
+
 
 def get_token(code):
     save_created_state(state)
@@ -75,6 +108,15 @@ def get_users(access_token):
 	response = requests.get(url)
 	return response.json()
 
+def get_new_users(url, access_token, mycol):
+	params = {"access_token": access_token}
+	import urllib
+	url = url + '?' + urllib.parse.urlencode(params) 
+	response = requests.get(url)
+	response_json = response.json()	
+	#x = mycol.insert_one(response_json)
+	return response.json()
+
 def get_user_webpage(json_response):
 	html_url = json_response['html_url']
 	return html_url
@@ -95,21 +137,33 @@ def get_user_name(json_response):
 def get_followers(json_response):
 	url = json_response['followers_url']
 	import urllib 
-	response = requests.get(url)
-	return response.json()
+	response = requests.get(url).json()
+	url = []
+	for input in response:
+		url.append(input['url'])
+		print(input['url'])
+	return url
 
 def get_following(json_response):
 	url = json_response['following_url']
 	import urllib 
 	url, _ = url.split('{')
 	print(url)
-	response = requests.get(url)
-	return response
-   
+	response = requests.get(url).json()
+	url = []
+	for input in response:
+		url.append(input['url'])
+		print(input['url'])
+	return url
+  
+
 def get_repos(json_response):
 	url = json_response['repos_url']
 	import urllib 
 	response = requests.get(url)
+	response_json = response.json()
+	x = coll_repos.insert_many(response_json)
+	print(x.inserted_ids)
 	return response
 
 
