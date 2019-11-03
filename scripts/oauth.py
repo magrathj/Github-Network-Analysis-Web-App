@@ -54,13 +54,17 @@ def reddit_callback():
 
 
 def recursive_get_user_data(following_urls, followers_urls, access_token):
+	print("\n recursive_get_user_data \n")
 	for url in following_urls:
-		print(get_new_users(url, access_token, coll_followering))
-	
-	for url in followers_urls:
-		print(get_new_users(url, access_token, coll_followers))
+		get_new_users(url, access_token, coll_followering)
+	print("\n following_urls \n")
 
-	return()
+	for url in followers_urls:
+		print(url)
+		get_new_users(url, access_token, coll_followers)
+	print("\n followers_urls \n")
+	
+	return
 
 
 
@@ -111,10 +115,6 @@ def get_users(access_token):
 	# get users repos 
 	repos = get_repos(response_json)
 
-	# store user's repos into repos collections
-	repos_json = repos.json()
-	x = coll_repos.insert_many(repos_json)
-
 	return response.json() 
 
 def get_new_users(url, access_token, mycol):
@@ -122,19 +122,21 @@ def get_new_users(url, access_token, mycol):
 	import urllib
 	url = url + '?' + urllib.parse.urlencode(params) 
 	response = requests.get(url)
-
+	print(url)
 	# store user into either following/follower collection
 	response_json = response.json()	
 	x = mycol.insert_one(response_json)
 
+	#print(response_json)
 	# get users repos 
 	repos = get_repos(response_json)
 
 	# store user's repos into repos collections
-	repos_json = repos.json()
-	x = coll_repos.insert_many(repos_json)
+	#repos_json = repos.json()
+	#x = coll_repos.insert_many(repos_json)
+	#print(repos_json)
 
-	return response.json()
+	return 
 
 def get_user_webpage(json_response):
 	html_url = json_response['html_url']
@@ -157,6 +159,8 @@ def get_followers(json_response):
 	url = json_response['followers_url']
 	import urllib 
 	response = requests.get(url).json()
+	#print("get_followers -------- \n")
+	#print(response)
 	url = []
 	for input in response:
 		url.append(input['url'])
@@ -181,11 +185,17 @@ def get_following(json_response):
 def get_repos(json_response):
 	url = json_response['repos_url']
 	import urllib 
+	print(url)
 	response = requests.get(url)
-	response_json = response.json()
-	#x = coll_repos.insert_many(response_json)
-	#print(x.inserted_ids)
-	return response
+	if len(response.json()) == 0:
+		print("no repos")
+	else:
+		# store user's repos into repos collections
+		print("repos")
+		repos_json = response.json()
+		x = coll_repos.insert_many(repos_json)
+	print(url)
+	return 
 
 
 def get_collaborators(json_repos, access_token):
