@@ -26,3 +26,4 @@ virtualenv==15.2.0
 virtualenv-clone==0.3.0
 Werkzeug==0.15.3
 networkx==2.2
+pymongo
